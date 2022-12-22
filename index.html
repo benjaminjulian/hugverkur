@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+<title>hugðartregða</title>
+<style>
+	@font-face {
+		font-family: Bahnschrift;
+		src: url("BAHNSCHRIFT.TTF");
+	}
+	@font-face {
+		font-family: Poppins;
+		src: url("Poppins-Light.ttf");
+	}
+	* {
+		padding: 0;
+		margin: 0;
+	}
+	html, body {
+		height: 100%;
+		width: 100%;
+		overflow-x: hidden;
+		overflow-y: auto;
+		scrollbar-width: none;
+	}
+	#life {
+		display: block;
+		position: fixed;
+		width: 100%;
+		height: 100%;
+		top: 0;
+		left: 0;
+	}
+	#content {
+		position: absolute;
+		left: 0;
+		right: 0;
+		margin-left: auto;
+		margin-right: auto;
+		top: 35%;
+	}
+	p {
+		text-align: center;
+		margin-bottom: 4vh;
+		font-size: min(3vh, 3vw);
+	}
+	a {
+		font-family: Bahnschrift;
+		font-weight: bold;
+		font-size: min(4.5vh, 4.5vw);
+		color: white;
+		text-decoration: none;
+	}
+	a:hover {
+		color: lightgray;
+	}
+	span {
+		font-family: Poppins;
+		font-size: min(3vh, 3vw);
+		color: lightgray;
+	}
+	#bla {
+		position:  absolute;
+	}
+</style>
+<body>
+	<canvas id="bla">
+	</canvas>
+	<canvas id="life">
+	</canvas>
+	<div id="content">
+		<p>
+			<a href="//graff.is">graff.is</a>
+			<br>
+			<span>safn fyrir veggjalist</span>
+		</p>
+		<p>
+			<a href="//benjaminjulian.com/blogg/blog/tutorial-vedur">sjálfvirk veðurstöð</a>
+			<br>
+			<span>RPi+Arduino og nokkrir skynjarar</span>
+		</p>
+		<p>
+			<a href="//skjalfti.benjaminjulian.com">skjálftakort</a>
+			<br>
+			<span>opinber gögn á þrívíðu korti</span>
+		</p>
+		<p>
+			<a href="//app.efling.is/vaktareiknir">vaktareiknir</a>
+			<br>
+			<span>reiknivél fyrir styttingu vinnuvikunnar</span>
+		</p>
+		<p>
+			<a href="//adobe.ly/33OQV4n">ljósmyndir</a>
+			<br>
+			<span>...sem ég hef tekið</span>
+		</p>
+		<p>
+			<a href="//youtube.com/watch?v=N5-lKZJNxAA">eldgos á páskum</a>
+			<br>
+			<span>myndband af eldgosi</span>
+		</p>
+	</div>
+	<script>
+		foreground = '#FFFFFF';
+		background = 'black';
+		interval = 1200;
+		dropoff = 100;
+		lightness = 255;
+		dimmer = 1;
+
+		c = document.querySelector('#life');
+		x = c.getContext('2d');
+		s = 5;
+		a = []
+		w = window.innerWidth;
+		h = window.innerHeight;
+		t_w = Math.floor(w/s);
+		t_h = Math.floor(h/s);
+
+		// fit
+		c.width = w;
+		c.height = h;
+
+		// array
+		for (i = 0; i < t_w; i++) {
+			a[i] = []
+			for (j = 0; j < t_h; j++) {
+				a[i][j] = 0;
+			}
+		}
+		var canvas = document.querySelector("#bla");
+		var ctx = canvas.getContext("2d");
+		canvas.width = t_w;
+		canvas.height = t_h;
+		ctx.fillStyle = "black";
+		ctx.fillRect(0,0,canvas.width, canvas.height);
+		ctx.font = Math.round(Math.min(canvas.height/4, canvas.width/10)).toString() + "px Bahnschrift";
+		ctx.fillStyle = "white";
+		ctx.textAlign = "center";
+		ctx.fillText("Benjamín Julian", canvas.width/2, canvas.height/4);
+		img = ctx.getImageData(0, 0, canvas.width, canvas.height);
+		for (img_i = 0; img_i < img.data.length; img_i += 4) {
+			if (img.data[img_i] !== 0) {
+				a[img_i/4 % t_w][Math.floor(img_i/4/t_w)] = 1;
+			}
+		}
+		console.log(a)
+
+		// bg
+		x.fillStyle = background;
+		x.fillRect(0, 0, c.width, c.height);
+
+		// THE GAME
+		draw();
+		function repeater() {
+			if (interval > 60)
+				interval -= dropoff;
+			dropoff = Math.max(1, dropoff*0.9);
+			if (lightness > 32)
+				lightness -= dimmer;
+			lstr = Number(lightness).toString(16);
+			foreground = "#" + lstr+lstr+lstr;
+			draw();
+			loop();console.log(lightness);
+			setTimeout(function() {repeater();}, interval);
+		}
+		setTimeout(function() {repeater();}, interval);
+
+		// draw
+		function draw() {
+			x.fillStyle = background;
+			x.fillRect(0, 0, c.width, c.height);
+
+			x.fillStyle = foreground;
+
+			for (i = 0; i < t_w; i++) {
+				for (j = 0; j < t_h; j++) {
+					if (a[i][j]) {
+						x.fillRect(i*s+1, j*s+1, s-2, s-2);
+					}
+				}
+			}
+		}
+
+		// count
+		function count(x, y) {
+			n = 0;
+			for (count_i = -1; count_i <= 1; count_i++) {
+				if (x + count_i < 0 || x + count_i >= t_w) continue;
+
+				for (count_j = -1; count_j <= 1; count_j++) {
+					if (y + count_j < 0 || y + count_j >= t_h) {
+						continue;
+					}
+
+					if (count_i !== 0 || count_j !== 0) {
+						n += a[x+count_i][y+count_j];
+					}
+				}
+			}
+			return n;
+		}
+
+		// loop
+		function loop() {
+			for (i = 0; i < t_w; i++) {
+				for (j = 0; j < t_h; j++) {
+					n = count(i, j);
+
+					if (n < 2) {
+						a[i][j] = 0;
+					} else if (n == 3) {
+						a[i][j] = 1;
+					} else if (n > 3) {
+						a[i][j] = 0;
+					}
+				}
+			}
+		}
+	</script>
+</body>
+</html>
