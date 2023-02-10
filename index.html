@@ -38,6 +38,15 @@
 		margin-left: auto;
 		margin-right: auto;
 		top: 35%;
+		width: max(60vw, 400px);
+	}
+	#flex-container {
+		display: flex;
+		flex-direction: row;
+		flex-wrap: wrap;
+		justify-content: center;
+		align-items: center;
+		align-content: center;
 	}
 	p {
 		text-align: center;
@@ -51,16 +60,56 @@
 		color: white;
 		text-decoration: none;
 	}
-	a:hover {
-		color: lightgray;
-	}
-	span {
-		font-family: Poppins;
-		font-size: min(3vh, 3vw);
-		color: lightgray;
+	a:hover span {
+		color: black;
+		background-color: white;
 	}
 	#bla {
 		position:  absolute;
+	}
+	.list-box {
+		display: flex;
+		width: 300px;
+		height: 200px;
+		margin: 10px;
+	}
+	.list-box > img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+	.list-box > span {
+		font-family: Poppins;
+		font-size: min(3vh, 3vw);
+		font-weight: bold;
+		color: white;
+		background-color: black;
+		padding: 4px;
+		margin: auto;
+	}
+	#list-item_graff {
+		background-image: url("graff.jpg");
+		background-size: cover;
+	}
+	#list-item_skjalfti {
+		background-image: url("skjalfti.jpg");
+		background-size: cover;
+	}
+	#list-item_myndir {
+		background-image: url("myndir.jpg");
+		background-size: cover;
+	}
+	#list-item_vedur {
+		background-image: url("vedur.jpg");
+		background-size: cover;
+	}
+	#list-item_grin {
+		background-image: url("grin.jpg");
+		background-size: cover;
+	}
+	#list-item_seinn {
+		background-image: url("seinn.jpg");
+		background-size: cover;
 	}
 </style>
 <body>
@@ -69,38 +118,57 @@
 	<canvas id="life">
 	</canvas>
 	<div id="content">
-		<p>
-			<a href="//graff.is">graff.is</a>
-			<br>
-			<span>safn fyrir veggjalist</span>
-		</p>
-		<p>
-			<a href="//benjaminjulian.com/blogg/blog/tutorial-vedur">sjálfvirk veðurstöð</a>
-			<br>
-			<span>RPi+Arduino og nokkrir skynjarar</span>
-		</p>
-		<p>
-			<a href="//skjalfti.benjaminjulian.com">skjálftakort</a>
-			<br>
-			<span>opinber gögn á þrívíðu korti</span>
-		</p>
-		<p>
-			<a href="//app.efling.is/vaktareiknir">vaktareiknir</a>
-			<br>
-			<span>reiknivél fyrir styttingu vinnuvikunnar</span>
-		</p>
-<!--
-		<p>
-			<a href="//adobe.ly/33OQV4n">ljósmyndir</a>
-			<br>
-			<span>...sem ég hef tekið</span>
-		</p>
-		<p>
-			<a href="//youtube.com/watch?v=N5-lKZJNxAA">eldgos á páskum</a>
-			<br>
-			<span>myndband af eldgosi</span>
-		</p>
--->
+		<div id="flex-container">
+			<div>
+				<a href="//graff.is">
+					<div class="list-box" id="list-item_graff">
+						<span>graff.is</span>
+					</div>
+				</a>
+			</div>
+			<div>
+				<a href="//benjaminjulian.com/myndir">
+					<div class="list-box" id="list-item_myndir">
+						<span>ljósmyndir</span>
+					</div>
+				</a>
+			</div>
+			<div>
+				<a href="//bj.is">
+					<div class="list-box" id="list-item_tulkun">
+						<span>rittúlkun</span>
+					</div>
+				</a>
+			</div>
+			<div>
+				<a href="//seinn.is">
+					<div class="list-box" id="list-item_seinn">
+						<span>er strætó seinn?</span>
+					</div>
+				</a>
+			</div>
+			<div>
+				<a href="//youtu.be/Kx7-hiRpD2A">
+					<div class="list-box" id="list-item_vedur">
+						<span>veðurstöð</span>
+					</div>
+				</a>
+			</div>
+			<div>
+				<a href="//vimeo.com/87940580">
+					<div class="list-box" id="list-item_grin">
+						<span>glens</span>
+					</div>
+				</a>
+			</div>
+			<div>
+				<a href="//skjalfti.benjaminjulian.com">
+					<div class="list-box" id="list-item_skjalfti">
+						<span>skjálftakort</span>
+					</div>
+				</a>
+			</div>
+		</div>
 	</div>
 	<script>
 		foreground = '#FFFFFF';
@@ -139,14 +207,13 @@
 		ctx.font = Math.round(Math.min(canvas.height/4, canvas.width/10)).toString() + "px Bahnschrift";
 		ctx.fillStyle = "white";
 		ctx.textAlign = "center";
-		ctx.fillText("Benjamín Julian", canvas.width/2, canvas.height/4);
+		ctx.fillText("Benjamín Julian", canvas.width/2, canvas.height/6);
 		img = ctx.getImageData(0, 0, canvas.width, canvas.height);
 		for (img_i = 0; img_i < img.data.length; img_i += 4) {
 			if (img.data[img_i] !== 0) {
 				a[img_i/4 % t_w][Math.floor(img_i/4/t_w)] = 1;
 			}
 		}
-		console.log(a)
 
 		// bg
 		x.fillStyle = background;
@@ -163,7 +230,7 @@
 			lstr = Number(lightness).toString(16);
 			foreground = "#" + lstr+lstr+lstr;
 			draw();
-			loop();console.log(lightness);
+			loop();
 			setTimeout(function() {repeater();}, interval);
 		}
 		setTimeout(function() {repeater();}, interval);
